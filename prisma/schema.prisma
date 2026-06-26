@@ -19,6 +19,7 @@ model User {
   accounts      Account[]
   tasks     Task[]
   taskLists TaskList[]
+  notes     Note[]
 }
 
 model Session {
@@ -93,4 +94,16 @@ model SubTask {
   completed Boolean @default(false)
   taskId    String
   task      Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+
+model Note {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  color       String   @default("default")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
