@@ -52,6 +52,25 @@ router.post("/", requireAuth, async (req: Request, res: Response) => {
   res.status(201).json(task);
 });
 
+router.get("/calendar", requireAuth, async (req, res) => {
+  const userId = (req as any).user.id;
+
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), 1);       // 1st of month
+  const end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59); // last day
+
+  const tasks = await prisma.task.findMany({
+    where: {
+      userId,
+      dueDate: { gte: start, lte: end },
+    },
+    include: { subtasks: true },
+    orderBy: { dueDate: "asc" },
+  });
+
+  res.json(tasks);
+});
+
 // GET /api/tasks/lists — all lists for the logged-in user
 router.get("/lists", requireAuth, async (req: Request, res: Response) => {
   const userId = (req as any).user.id;
