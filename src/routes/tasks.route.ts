@@ -56,8 +56,11 @@ router.get("/calendar", requireAuth, async (req, res) => {
   const userId = (req as any).user.id;
 
   const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), 1);       // 1st of month
-  const end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59); // last day
+  const year = req.query.year ? parseInt(req.query.year as string, 10) : now.getFullYear();
+  const month = req.query.month ? parseInt(req.query.month as string, 10) : now.getMonth(); // 0-indexed
+
+  const start = new Date(year, month, 1);
+  const end = new Date(year, month + 1, 0, 23, 59, 59);
 
   const tasks = await prisma.task.findMany({
     where: {
