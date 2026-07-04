@@ -169,6 +169,109 @@ router.patch("/:id/toggle", requireAuth, async (req: Request, res: Response) => 
   res.json(task);
 });
 
+// PATCH /api/tasks/:taskId/subtasks/:subtaskId/toggle
+router.patch(
+  "/:taskId/subtasks/:subtaskId/toggle",
+  requireAuth,
+  async (req: Request, res: Response) => {
+    const userId = (req as any).user.id;
+    const { taskId, subtaskId } = req.params;
+    const { completed } = req.body;
+
+    // Verify the parent task belongs to this user before touching the subtask
+    const task = await prisma.task.findFirst({
+      where: { id: taskId, userId },
+    });
+
+    if (!task) {
+      res.status(404).json({ error: "Task not found" });
+      return;
+    }
+
+    const subtask = await prisma.subTask.update({
+      where: { id: subtaskId, taskId },
+      data: { completed },
+    });
+
+    res.json(subtask);
+  }
+);
+
+// POST /api/tasks/:taskId/subtasks — add a subtask
+router.post("/:taskId/subtasks", requireAuth, async (req: Request, res: Response) => {
+  const userId = (req as any).user.id;
+  const { taskId } = req.params;
+  const { title } = req.body;
+
+  const task = await prisma.task.findFirst({ where: { id: taskId, userId } });
+  if (!task) {
+    res.status(404).json({ error: "Task not found" });
+    return;
+  }
+
+  const subtask = await prisma.subTask.create({
+    data: { title, completed: false, taskId },
+  });
+
+  res.status(201).json(subtask);
+});
+
+// PUT /api/tasks/:taskId/subtasks/:subtaskId — rename a subtask
+router.put("/:taskId/subtasks/:subtaskId", requireAuth, async (req: Request, res: Response) => {
+  const userId = (req as any).user.id;
+  const { taskId, subtaskId } = req.params;
+  const { title } = req.body;
+
+  const task = await prisma.task.findFirst({ where: { id: taskId, userId } });
+  if (!task) {
+    res.status(404).json({ error: "Task not found" });
+    return;
+  }
+
+  const subtask = await prisma.subTask.update({
+    where: { id: subtaskId, taskId },
+    data: { title },
+  });
+
+  res.json(subtask);
+});
+
+// PATCH /api/tasks/:taskId/subtasks/:subtaskId/toggle
+router.patch("/:taskId/subtasks/:subtaskId/toggle", requireAuth, async (req: Request, res: Response) => {
+  const userId = (req as any).user.id;
+  const { taskId, subtaskId } = req.params;
+  const { completed } = req.body;
+
+  const task = await prisma.task.findFirst({ where: { id: taskId, userId } });
+  if (!task) {
+    res.status(404).json({ error: "Task not found" });
+    return;
+  }
+
+  const subtask = await prisma.subTask.update({
+    where: { id: subtaskId, taskId },
+    data: { completed },
+  });
+
+  res.json(subtask);
+});
+
+// DELETE /api/tasks/:taskId/subtasks/:subtaskId
+router.delete("/:taskId/subtasks/:subtaskId", requireAuth, async (req: Request, res: Response) => {
+  const userId = (req as any).user.id;
+  const { taskId, subtaskId } = req.params;
+
+  const task = await prisma.task.findFirst({ where: { id: taskId, userId } });
+  if (!task) {
+    res.status(404).json({ error: "Task not found" });
+    return;
+  }
+
+  await prisma.subTask.delete({ where: { id: subtaskId, taskId } });
+
+  res.status(204).send();
+});
+
 // DELETE /api/tasks/:id
 router.delete("/:id", requireAuth, async (req: Request, res: Response) => {
   const userId = (req as any).user.id;
