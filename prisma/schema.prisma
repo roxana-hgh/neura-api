@@ -3,18 +3,18 @@ generator client {
 }
 
 
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
-
-
 datasource db {
-  provider  = "postgresql"
-  url  	    = env("DATABASE_URL")
-  // uncomment next line if you use Prisma <5.10
-  directUrl = env("DATABASE_URL_UNPOOLED")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
+
+// // neon 
+// datasource db {
+//   provider  = "postgresql"
+//   url  	    = env("DATABASE_URL")
+//   // uncomment next line if you use Prisma <5.10
+//   directUrl = env("DATABASE_URL_UNPOOLED")
+// }
 
 model User {
   id            String    @id @default(cuid())
@@ -22,13 +22,16 @@ model User {
   email         String    @unique
   emailVerified Boolean   @default(false)
   image         String?
+  age           Int?
+  job           String?
+  gender        String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
-  tasks     Task[]
-  taskLists TaskList[]
-  notes     Note[]
+  tasks         Task[]
+  taskLists     TaskList[]
+  notes         Note[]
   focusSessions FocusSession[]
 }
 
