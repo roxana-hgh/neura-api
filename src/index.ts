@@ -6,6 +6,7 @@ import tasksRouter from "./routes/tasks.route";
 import notesRouter from "./routes/notes.route";
 import focusSessionRouter from "./routes/focusSession.route";
 import userRouter from "./routes/user.route";
+import assistantRouter from "./routes/assistant.route";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,6 +33,7 @@ app.use("/api/tasks", tasksRouter);
 app.use("/api/notes", notesRouter);
 app.use("/api/focus-sessions", focusSessionRouter);
 app.use("/api/users", userRouter);
+app.use("/api/assistant", assistantRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
