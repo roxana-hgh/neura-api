@@ -11,16 +11,21 @@ import assistantRouter from "./routes/assistant.route";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.CORS_ORIGIN, // deployed frontend
+].filter(Boolean);
+
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: allowedOrigins as string[],
   credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
+app.use(express.json());
 
 app.options("/{*path}", cors());
 
-app.use(express.json());
+
 
 
 app.get("/health", (_req, res) => {
