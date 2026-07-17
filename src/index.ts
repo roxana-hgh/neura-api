@@ -35,8 +35,6 @@ app.use("/api/focus-sessions", focusSessionRouter);
 app.use("/api/users", userRouter);
 app.use("/api/assistant", assistantRouter);
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 export default app;
